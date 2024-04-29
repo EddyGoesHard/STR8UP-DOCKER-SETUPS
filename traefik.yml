@@ -1,0 +1,74 @@
+# traefik.yml
+
+# Logging niveau instellen op INFO voor uitgebreide logging
+log:
+  level: INFO
+
+# Traefik API inschakelen voor dashboard en monitoring
+api:
+  dashboard: true
+
+# Docker provider configureren om dynamisch Docker-containers te ontdekken
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"  # Verbinding met Docker-daemon
+    exposedByDefault: false  # Alleen blootgestelde containers meenemen
+
+# HTTP entry points configureren voor poorten 80 en 443
+entryPoints:
+  web:
+    address: ":80"  # HTTP verkeer
+  websecure:
+    address: ":443"  # HTTPS verkeer
+
+# Certificaatresolver configureren voor automatische HTTPS met Let's Encrypt
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "jouw_email@example.com"  # E-mailadres voor certificaatregistratie
+      storage: "/letsencrypt/acme.json"  # Opslaglocatie voor certificaten
+      httpChallenge:
+        entryPoint: "web"  # HTTP uitdaging voor certificaatvalidatie
+
+# Toegangscontrole instellen voor alleen specifieke IP-adressen
+accessControl:
+  whitelist:
+    sourceRange:
+      - "IP_ADRES_1"  # Voeg hier toegestane IP-adressen toe
+      - "IP_ADRES_2"
+      - "IP_ADRES_3"
+
+# Geavanceerde zero day-beveiligingsconfiguraties
+experimental:
+  devPlugin:
+    enabled: false  # Schakel development plugins uit voor productiegebruik
+  plugins:
+    retry:
+      enabled: true  # Schakel retry-plugin in voor automatische herhaling van mislukte verzoeken
+    ipWhiteList:
+      enabled: true  # Schakel IP Whitelisting-plugin in voor extra IP-beveiliging
+    ipWhiteList:
+      ipStrategy:
+        depth: 3  # Diepte van de IP-adreszoekstrategie instellen voor geavanceerde bescherming
+
+# Configuratie voor het proxyen van Jellyfin
+http:
+  routers:
+    jellyfin:
+      rule: "Host(`jellyfin.example.com`)"  # Hostnaam voor Jellyfin
+      service: "jellyfin"
+      entryPoints:
+        - "websecure"
+  services:
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://jellyfin:8096"  # URL van Jellyfin-container
+
+# Integratie met Cloudflare voor extra beveiliging
+ping:
+  entryPoint: "web"  # Ping endpoint instellen voor Cloudflare monitoring
+  providers:
+    cloudflare:
+      token: "CLOUDFLARE_TOKEN"  # Cloudflare API token voor authenticatie
+      pollingInterval: 5s  # Interval voor het controleren van statusupdates
