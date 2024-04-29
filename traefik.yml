@@ -54,16 +54,16 @@ experimental:
 # Configuratie voor het proxyen van Jellyfin
 http:
   routers:
-    jellyfin:
-      rule: "Host(`jellyfin.example.com`)"  # Hostnaam voor Jellyfin
+    jellyfin: # Vervang jellyfin.example.com door je eigen domeinnaam
+      rule: "Host(`jellyfin.example.com`)"  # Hostnaam voor Jellyfin.
       service: "jellyfin"
       entryPoints:
         - "websecure"
   services:
     jellyfin:
       loadBalancer:
-        servers:
-          - url: "http://jellyfin:8096"  # URL van Jellyfin-container
+        servers: # Zorg ervoor dat de poort (8096) overeenkomt met de poort waarop Jellyfin luistert
+          - url: "http://jellyfin:8096"  # URL van Jellyfin-container.  
 
 # Integratie met Cloudflare voor extra beveiliging
 ping:
