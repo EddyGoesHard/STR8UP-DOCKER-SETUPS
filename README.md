@@ -59,7 +59,6 @@ Bij het draaien van Docker-containerapplicaties die je wilt blootstellen via Tra
 Vervang `<container-naam>`, `<router-naam>`, `<gewenste_hostnaam>`, `<service-naam>` en `<poort>` door de relevante waarden voor je applicatie.
 
 ## Stap 4: Traefik Starten
-
 Start Traefik met behulp van Docker:
 
 ```bash
@@ -72,3 +71,49 @@ docker run -d \
   --restart=always \
   --name traefik \
   traefik:v2.0 --configFile=/traefik.yml
+```
+
+Vervang /pad/naar/traefik.yml door het pad naar je traefik.yml-bestand en /pad/naar/letsencrypt door het pad naar de directory waar je acme.json wordt opgeslagen.
+
+## Stap 5: Toegang tot Traefik Dashboard
+Navigeer naar http://<jouw_server_ip>:443 in je webbrowser om toegang te krijgen tot het Traefik dashboard.
+
+### Jellyfin Configuratie
+Voeg de onderstaande configuratie toe aan het traefik.yml-bestand voor het proxyen van Jellyfin:
+
+```bash
+yaml
+Copy code
+http:
+  routers:
+    jellyfin:
+      rule: "Host(`jellyfin.example.com`)"
+      service: "jellyfin"
+      entryPoints:
+        - "websecure"
+  services:
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://jellyfin:8096"
+```
+
+Vervang jellyfin.example.com door je eigen domeinnaam en zorg ervoor dat de poort (8096) overeenkomt met de poort waarop Jellyfin luistert.
+
+### Cloudflare Integratie
+Om Traefik te integreren met Cloudflare voor extra beveiliging, voeg de volgende configuratie toe aan het traefik.yml-bestand:
+
+yaml```
+bash
+Copy code
+ping:
+  entryPoint: "web"
+  providers:
+    cloudflare:
+      token: "CLOUDFLARE_TOKEN"
+      pollingInterval: 5s
+```
+
+Vervang "CLOUDFLARE_TOKEN" door je eigen Cloudflare API-token voor authenticatie.
+
+Met deze uitbreidingen wordt Traefik aangepast om Jellyfin te ondersteunen en te integreren met Cloudflare voor extra beveiliging en monitoring. Vergeet niet om de instellingen aan te passen aan je eigen omgeving en vereisten.
