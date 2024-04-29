@@ -97,14 +97,14 @@ http:
         servers:
           - url: "http://jellyfin:8096"
 ```
-
 Vervang jellyfin.example.com door je eigen domeinnaam en zorg ervoor dat de poort (8096) overeenkomt met de poort waarop Jellyfin luistert.
 
 ### Cloudflare Integratie
 Om Traefik te integreren met Cloudflare voor extra beveiliging, voeg de volgende configuratie toe aan het traefik.yml-bestand:
 
-yaml```
+```
 bash
+yaml
 Copy code
 ping:
   entryPoint: "web"
@@ -113,7 +113,6 @@ ping:
       token: "CLOUDFLARE_TOKEN"
       pollingInterval: 5s
 ```
-
 Vervang "CLOUDFLARE_TOKEN" door je eigen Cloudflare API-token voor authenticatie.
 
 Met deze uitbreidingen wordt Traefik aangepast om Jellyfin te ondersteunen en te integreren met Cloudflare voor extra beveiliging en monitoring. Vergeet niet om de instellingen aan te passen aan je eigen omgeving en vereisten.
